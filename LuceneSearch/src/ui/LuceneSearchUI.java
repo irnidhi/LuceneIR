@@ -1,34 +1,36 @@
 package ui;
 
+import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JTextField;
-import java.awt.BorderLayout;
+
 import javax.swing.JTabbedPane;
 import javax.swing.JPanel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import java.awt.Component;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+
 import javax.swing.JMenuBar;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import javax.swing.JTable;
-import javax.swing.JSplitPane;
-import javax.swing.JInternalFrame;
-import java.awt.FlowLayout;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JLabel;
-import java.awt.Font;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.Choice;
+
+import java.io.IOException;
+
 import javax.swing.JComboBox;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+
+import org.apache.lucene.queryparser.classic.ParseException;
+
+import work.LuceneSearch;
 
 public class LuceneSearchUI {
 
@@ -41,6 +43,8 @@ public class LuceneSearchUI {
 	private JTextField textBodyDoesNot;
 	private JTextField textFromPos;
 	private JTextField textToPos;
+	private JTable table;
+	private LuceneSearch luceneSearch = null;
 
 	/**
 	 * Launch the application.
@@ -69,6 +73,13 @@ public class LuceneSearchUI {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		luceneSearch = new LuceneSearch();
+		try {
+			luceneSearch.buildIndex();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
 		frmInGroup = new JFrame();
 		frmInGroup.setResizable(false);
 		frmInGroup.setTitle("IN4325 - Group 11 - Lucene Search");
@@ -104,36 +115,62 @@ public class LuceneSearchUI {
 		textSearchStd.setColumns(25);
 		
 		JButton btnSearchStd = new JButton("Search");
+		btnSearchStd.setActionCommand("btnSearchStd");
+
 		
 		JLabel lblLucene = new JLabel("Lucene !");
 		lblLucene.setHorizontalAlignment(SwingConstants.CENTER);
 		lblLucene.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		
+		table = new JTable();
+		table.setModel(new DefaultTableModel(
+			new Object[][] {
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
+			},
+			new String[] {
+				"From", "Subject", "Date", "Body"
+			}
+		));
 		GroupLayout gl_stdPanel = new GroupLayout(stdPanel);
 		gl_stdPanel.setHorizontalGroup(
 			gl_stdPanel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_stdPanel.createSequentialGroup()
 					.addGroup(gl_stdPanel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_stdPanel.createSequentialGroup()
-							.addGap(83)
-							.addComponent(textSearchStd, GroupLayout.PREFERRED_SIZE, 623, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_stdPanel.createSequentialGroup()
 							.addGap(362)
 							.addComponent(btnSearchStd))
 						.addGroup(gl_stdPanel.createSequentialGroup()
 							.addGap(349)
-							.addComponent(lblLucene, GroupLayout.PREFERRED_SIZE, 90, GroupLayout.PREFERRED_SIZE)))
-					.addContainerGap(83, Short.MAX_VALUE))
+							.addComponent(lblLucene, GroupLayout.PREFERRED_SIZE, 90, GroupLayout.PREFERRED_SIZE))
+						.addGroup(gl_stdPanel.createSequentialGroup()
+							.addGap(83)
+							.addComponent(textSearchStd, GroupLayout.PREFERRED_SIZE, 623, GroupLayout.PREFERRED_SIZE))
+						.addGroup(gl_stdPanel.createSequentialGroup()
+							.addGap(45)
+							.addComponent(table, GroupLayout.PREFERRED_SIZE, 698, GroupLayout.PREFERRED_SIZE)))
+					.addContainerGap(46, Short.MAX_VALUE))
 		);
 		gl_stdPanel.setVerticalGroup(
-			gl_stdPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, gl_stdPanel.createSequentialGroup()
+			gl_stdPanel.createParallelGroup(Alignment.TRAILING)
+				.addGroup(gl_stdPanel.createSequentialGroup()
 					.addGap(37)
 					.addComponent(lblLucene)
 					.addGap(27)
-					.addComponent(textSearchStd)
+					.addComponent(textSearchStd, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addGap(11)
 					.addComponent(btnSearchStd)
-					.addGap(381))
+					.addGap(42)
+					.addComponent(table, GroupLayout.PREFERRED_SIZE, 311, GroupLayout.PREFERRED_SIZE)
+					.addGap(192))
 		);
 		stdPanel.setLayout(gl_stdPanel);
 		
@@ -141,10 +178,7 @@ public class LuceneSearchUI {
 		searchTabbedPane.addTab("Advanced", null, advPanel, null);
 		
 		JButton btnSearchAdv = new JButton("Search");
-		btnSearchAdv.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-			}
-		});
+		//btnSearchAdv.addActionListener((ActionListener) this);
 		
 		textFrom = new JTextField();
 		textFrom.setColumns(10);
@@ -287,6 +321,20 @@ public class LuceneSearchUI {
 		advPanel.setLayout(gl_advPanel);
 	}
 
-	private static void addPopup(Component component, final JPopupMenu popup) {
-	}
+
+
+	
+	public void actionPerformed(ActionEvent evt) {
+		String cmd = evt.getActionCommand();
+	    if (cmd == "btnSearchStd") {
+	    	String queryStr = textSearchStd.getText();
+	    	if (queryStr.trim().length()>0)
+				try {
+					luceneSearch.standardQuery(queryStr);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} 
+	    } 
+	 }
 }

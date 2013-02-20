@@ -1,6 +1,7 @@
 package work;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -33,31 +34,37 @@ public class LuceneQuery {
 		this.map = map;
 	}
 
-	public void simpleQuery(String queryStr, StandardAnalyzer analyzer, Directory index) throws IOException, ParseException {
+	public ArrayList<Document> simpleQuery(String queryStr, StandardAnalyzer analyzer, Directory index) throws IOException, ParseException {
 		System.out.println("Query = " + queryStr);
 		queryStr = simpleQueryConstructor(queryStr);
 	    System.out.println("Query = " + queryStr);
+	    
+	    ArrayList<Document> listRes = null;
 		Query q = new QueryParser(Version.LUCENE_40, "body", analyzer).parse(queryStr);
 	    
 	    reader = DirectoryReader.open(index);
 	    searcher = new IndexSearcher(reader);
 	    collector = TopScoreDocCollector.create(hitsPerPage, true);
 	    searcher.search(q, collector);
-	    displayResult();
+	    
+	    if (searcher!=null){
+		    ScoreDoc[] hits = collector.topDocs().scoreDocs;
+		    System.out.println("Found " + hits.length + " hits.");
+		    listRes = new ArrayList<Document>();
+		    for(int i=0;i<hits.length;++i) {
+		      int docId = hits[i].doc;
+		      Document d = searcher.doc(docId);
+		      System.out.println((i + 1) + ". " + d.get("senderName") + "\t" + d.get("mId"));
+		      listRes.add(d);
+		     
+		    }
+	    	
+	    }
+	    		
+	    return listRes;
 	}
 	
-	private void displayResult() throws IOException {
-	    ScoreDoc[] hits = collector.topDocs().scoreDocs;
-	    
-	    System.out.println("6-" + Calendar.getInstance().getTime());
-	    System.out.println("Found " + hits.length + " hits.");
-	    for(int i=0;i<hits.length;++i) {
-	      int docId = hits[i].doc;
-	      Document d = searcher.doc(docId);
-	      System.out.println((i + 1) + ". " + d.get("senderName") + "\t" + d.get("mId"));
-	    }
-		
-	}
+
 	public void close() throws IOException{
 		reader.close();
 	};
