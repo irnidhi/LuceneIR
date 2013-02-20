@@ -2,6 +2,7 @@ package ui;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.Font;
 
 import javax.swing.JFrame;
 import javax.swing.JTextField;
@@ -324,17 +325,5 @@ public class LuceneSearchUI {
 
 
 	
-	public void actionPerformed(ActionEvent evt) {
-		String cmd = evt.getActionCommand();
-	    if (cmd == "btnSearchStd") {
-	    	String queryStr = textSearchStd.getText();
-	    	if (queryStr.trim().length()>0)
-				try {
-					luceneSearch.standardQuery(queryStr);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} 
-	    } 
-	 }
+
 }
