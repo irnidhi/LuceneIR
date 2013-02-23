@@ -22,6 +22,8 @@ import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.Version;
 
+import data.Email;
+
 public class LuceneQuery {
     private IndexReader reader = null;
     private IndexSearcher searcher = null;
@@ -114,9 +116,9 @@ public class LuceneQuery {
 	      System.out.println((i + 1) + ". " + d.get("senderName") + "\t" + d.get("mId") + "\t" + d.get("date"));
 	    }
 	*/
-	public ArrayList<Document>  assistedQuery(String[] queryInput, Analyzer analyzer, Directory index) throws IOException, ParseException {
-		System.out.println("Query = " + queryInput.toString());
-		String queryStr = assistedQueryConstructor(queryInput);
+	public ArrayList<Document>  assistedQuery(Email email, Analyzer analyzer, Directory index) throws IOException, ParseException {
+		System.out.println("Query = " + email.toString());
+		String queryStr = assistedQueryConstructor(email);
 	    System.out.println("Query = " + queryStr);		
 			
 	    ArrayList<Document> listRes = null;
@@ -199,58 +201,61 @@ public class LuceneQuery {
 			return query;
 	}
 	
-	private String assistedQueryConstructor(String[] queryInput){
-		
+	private String assistedQueryConstructor(Email email){
 		//input check
+		/*
 		for(int i=0;i<10;i++){
 			while (!queryInput[i].equals("")){
-				if(queryInput[i].substring(0, 1).equals("*")) queryInput[i] = queryInput[i].substring(1);
+				if(queryInput[i].substring(0, 1).equals("*")) 
+					queryInput[i] = queryInput[i].substring(1);
 				else break;
 			}
 			while (!queryInput[i].equals("")){
-				if(queryInput[i].substring(0, 1).equals("?")) queryInput[i] = queryInput[i].substring(1);
+				if(queryInput[i].substring(0, 1).equals("?")) 
+					queryInput[i] = queryInput[i].substring(1);
 				else break;
 			}
 		}
-		
+		*/
 		//build query
 		String queryAss = "";
-		if(!queryInput[0].equals("")){
-			queryAss = queryAss + "date:[" + queryInput[0] + " TO " + queryInput[1] + "]";
+		if (email!=null){
+			if((!email.getDateFrom().equals("")) && (!email.getDateTo().equals(""))){
+				queryAss = queryAss + map.get("date") +":[" + email.getDateFrom() + " TO " + email.getDateTo() + "]";
+			}
+			if(!email.getSenderEmails().equals("")) {
+				if(!queryAss.equals("")) queryAss += " AND ";
+				queryAss = queryAss + map.get("senderEmails") +":" + email.getSenderEmails();
+			}
+			if(!email.getSenderName().equals("")) {
+				if(!queryAss.equals("")) queryAss += " AND ";
+				queryAss = queryAss + map.get("senderName") +":" + email.getSenderName();
+			}
+			if(!email.getSenderStatus().equals("")) {
+				if(!queryAss.equals("")) queryAss += " AND ";
+				queryAss = queryAss + map.get("senderStatus") +":" + email.getSenderStatus();
+			}
+			if(!email.getRecEmail().equals("")) {
+				if(!queryAss.equals("")) queryAss += " AND ";
+				queryAss = queryAss + map.get("recEmail") +":" + email.getRecEmail();
+			}
+			if(!email.getRecName().equals("")) {
+				if(!queryAss.equals("")) queryAss += " AND ";
+				queryAss = queryAss + map.get("recName") +":" + email.getRecName();
+			}
+			if(!email.getRecStatus().equals("")) {
+				if(!queryAss.equals("")) queryAss += " AND ";
+				queryAss = queryAss + map.get("recStatus") +":" + email.getRecStatus();
+			}
+			if(!email.getSubject().equals("")) {
+				if(!queryAss.equals("")) queryAss += " AND ";
+				queryAss = queryAss + map.get("subject") +":" + email.getSubject();
+			}
+			if(!email.getBody().equals("")) {
+				if(!queryAss.equals("")) queryAss += " AND ";
+				queryAss = queryAss + map.get("body") +":" + email.getBody();
+			}
 		}
-		if(!queryInput[2].equals("")) {
-			if(!queryAss.equals("")) queryAss += " AND ";
-			queryAss = queryAss + " senderEmails:" + queryInput[2];
-		}
-		if(!queryInput[3].equals("")) {
-			if(!queryAss.equals("")) queryAss += " AND ";
-			queryAss = queryAss + "senderName:" + queryInput[3];
-		}
-		if(!queryInput[4].equals("")) {
-			if(!queryAss.equals("")) queryAss += " AND ";
-			queryAss = queryAss + "senderStatus:" + queryInput[4];
-		}
-		if(!queryInput[5].equals("")) {
-			if(!queryAss.equals("")) queryAss += " AND ";
-			queryAss = queryAss + "recEmail:" + queryInput[5];
-		}
-		if(!queryInput[6].equals("")) {
-			if(!queryAss.equals("")) queryAss += " AND ";
-			queryAss = queryAss + "recName:" + queryInput[6];
-		}
-		if(!queryInput[7].equals("")) {
-			if(!queryAss.equals("")) queryAss += " AND ";
-			queryAss = queryAss + "recStatus:" + queryInput[7];
-		}
-		if(!queryInput[8].equals("")) {
-			if(!queryAss.equals("")) queryAss += " AND ";
-			queryAss = queryAss + "subject:" + queryInput[8];
-		}
-		if(!queryInput[9].equals("")) {
-			if(!queryAss.equals("")) queryAss += " AND ";
-			queryAss = queryAss + "body:" + queryInput[9];
-		}
-
 		return queryAss;
 	}
 }

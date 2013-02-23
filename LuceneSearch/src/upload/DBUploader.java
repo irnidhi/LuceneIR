@@ -30,7 +30,7 @@ public class DBUploader {
 	
 	public ResultSet readDataBase() throws Exception {
 	    try {
-
+	    	System.out.println("Start populating from database :" + Calendar.getInstance().getTime());
 	    	Properties props = new Properties();
 	        FileInputStream fis = new FileInputStream("c:/prop/jdbcconn.properties");
 	        props.load(fis);
@@ -45,9 +45,9 @@ public class DBUploader {
 	        connect = DriverManager.getConnection(url, user, password);
 
 	        statement = connect.createStatement();
-	        System.out.println("2-" + Calendar.getInstance().getTime());
+
 	        resultSet = statement.executeQuery(this.QUERY_STR);
-	        System.out.println("3-" + Calendar.getInstance().getTime());
+	        System.out.println("Done populating from database :" + Calendar.getInstance().getTime());
 	      
 	    } catch (Exception e) {
 	    	e.printStackTrace();

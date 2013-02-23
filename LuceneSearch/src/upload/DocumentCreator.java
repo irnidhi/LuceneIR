@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -44,6 +45,7 @@ public class DocumentCreator {
 	
 	public ArrayList<Document> createDocumentList(ResultSet resultSet, HashMap<String, String> map) throws SQLException {
 		Document doc = null;
+		System.out.println("Start populating document list :" + Calendar.getInstance().getTime());
 		if (resultSet!=null){
 			listDocuments = new ArrayList<Document>();
 			String oldMId ="-999";
@@ -106,7 +108,7 @@ public class DocumentCreator {
 			}			
 			System.out.println("ArrayList size = "+ listDocuments.size());
 		}
-		
+		System.out.println("Done populating document list :" + Calendar.getInstance().getTime());
 		return listDocuments; 
 	}
 }

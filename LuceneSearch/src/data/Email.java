@@ -5,6 +5,8 @@ import java.util.Date;
 public class Email {
 	private String mId;
 	private Long date;
+	private String dateFrom;
+	private String dateTo;
 	private String senderEmails;
 	private String senderName;
 	private String senderStatus;
@@ -18,21 +20,23 @@ public class Email {
 	public Email(){
 	}
 	
-	public Email(String mId, Long date, String senderEmails, String senderName,
+	public Email(String mId, String dateFrom, String dateTo, String senderEmails, String senderName,
 			String senderStatus, String recEmail, String recName,
 			String recStatus, String subject, String body, String type) {
 
 		this.mId = mId;
-		this.date = date;
-		this.senderEmails = senderEmails;
-		this.senderName = senderName;
-		this.senderStatus = senderStatus;
-		this.recEmail = recEmail;
-		this.recName = recName;
-		this.recStatus = recStatus;
-		this.subject = subject;
-		this.body = body;
-		this.type = type;
+		this.dateFrom = dateFrom.trim();
+		this.dateTo =dateTo.trim();
+		this.senderEmails = senderEmails.trim();
+		this.senderName = senderName.trim();
+		this.senderStatus = senderStatus.trim();
+		this.recEmail = recEmail.trim();
+		this.recName = recName.trim();
+		this.recStatus = recStatus.trim();
+		this.subject = subject.trim();
+		this.body = body.trim();
+		this.type = type.trim();
+
 	}
 	
 	public Email(String mId, Date date, String senderEmails, String senderName,
@@ -41,20 +45,20 @@ public class Email {
 
 		this.mId = mId;
 		this.date = date.getTime();
-		this.senderEmails = senderEmails;
-		this.senderName = senderName;
-		this.senderStatus = senderStatus;
-		this.recEmail = recEmail;
-		this.recName = recName;
-		this.recStatus = recStatus;
-		this.subject = subject;
-		this.body = body;
-		this.type = type;
-	}
+		this.senderEmails = senderEmails.trim();
+		this.senderName = senderName.trim();
+		this.senderStatus = senderStatus.trim();
+		this.recEmail = recEmail.trim();
+		this.recName = recName.trim();
+		this.recStatus = recStatus.trim();
+		this.subject = subject.trim();
+		this.body = body.trim();
+		this.type = type.trim();
 
+	}
 	@Override
 	public String toString() {
-		return "Email [mId=" + mId + ", date=" + date + ", senderEmails="
+		return "Email [mId=" + mId + ", dateFrom=" + dateFrom + ", dateTo=" + dateTo + ", senderEmails="
 				+ senderEmails + ", senderName=" + senderName
 				+ ", senderStatus=" + senderStatus + ", recEmail=" + recEmail
 				+ ", recName=" + recName + ", recStatus=" + recStatus
@@ -134,6 +138,22 @@ public class Email {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public String getDateTo() {
+		return dateTo;
+	}
+
+	public void setDateTo(String dateTo) {
+		this.dateTo = dateTo;
+	}
+
+	public String getDateFrom() {
+		return dateFrom;
+	}
+
+	public void setDateFrom(String dateFrom) {
+		this.dateFrom = dateFrom;
 	}
 	
 	

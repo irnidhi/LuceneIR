@@ -15,76 +15,26 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
 
+import data.Email;
+
 import upload.DocumentCreator;
 
 public class LuceneTest {
-	private static StandardAnalyzer analyzer = null;
-	private static Directory index = null;
-	private static IndexWriterConfig config = null;
-	private static IndexWriter w = null;
-	private static HashMap<String,String> docMap = null;
+
+	private static LuceneSearch lSearch = null;
 	
 	public static void main(String[] args) throws IOException, ParseException {
-		System.out.println("1-" + Calendar.getInstance().getTime());
-	    initializeProp();
-	    DocumentCreator docCreator = new DocumentCreator(docMap);
-	    ArrayList<Document> listDocuments = docCreator.documentGenerator();
-	    System.out.println("4-" + Calendar.getInstance().getTime());
-	    initializeIndex();
-	    addDocList(w, listDocuments);
-	    w.close();
-	    System.out.println("5-" + Calendar.getInstance().getTime());
-	    
+		lSearch = new LuceneSearch();
+		lSearch.buildIndex();
+		//tes standard query 1
+		 String queryStr = "Dicks*";
+		 lSearch.standardQuery(queryStr);
+		//tes standard query 2
+		 queryStr = "(senderName:Dickson OR senderStatus:hobo)";
+		 lSearch.standardQuery(queryStr);		 
+		//tes assisted query
+		// Email email = new Email("", "19980101000000","20050101000000", "dic*", "Dick*",  "**", "  ", "*", "??", "?",  "enron", "");
+		//lSearch.assistedQuery(email);
 
-	    // 2. query
-	    //String queryStr = args.length > 0 ? args[0] : "(senderName:Dickson OR senderStatus:hobo)";
-	    String queryStr = args.length > 0 ? args[0] : "(senderName:Dicks*) OR \"new york\"";
-	    LuceneQuery lQuery = new LuceneQuery(docMap);
-	    lQuery.simpleQuery(queryStr, analyzer, index);
-	    // reader can only be closed when there
-	    // is no need to access the documents any more.
-	    lQuery.close();
-	    System.out.println("7-" + Calendar.getInstance().getTime());
-
-	  }
-
-	  	private static void addDocList(IndexWriter w, ArrayList<Document> list) throws IOException{
-	  		Document doc =null;
-	  		if (list!=null){
-	  			Iterator<Document> iter = list.iterator();
-	  			while (iter.hasNext()) {
-	  				doc = iter.next();
-	  				w.addDocument(doc);
-	  			}
-	  			
-	  		}
-	  	}
-	  	
-	  	private static void initializeIndex() throws IOException{
-		    // 0. Specify the analyzer for tokenizing text.
-		    //    The same analyzer should be used for indexing and searching
-		    // 1. create the index
-		    analyzer = new StandardAnalyzer(Version.LUCENE_40);
-		    index = new RAMDirectory();
-		    
-		    config = new IndexWriterConfig(Version.LUCENE_40, analyzer);
-		    w = new IndexWriter(index, config);	  		
-		    
-	  	}
-
-	  	private static void initializeProp() {
-	  		docMap = new HashMap<String, String>();
-	  		docMap.put("mId", "mId");
-	  		docMap.put("date", "date");
-	  		docMap.put("senderEmails", "senderEmails");
-	  		docMap.put("senderName", "senderName");
-	  		docMap.put("senderStatus", "senderStatus");
-	  		docMap.put("subject", "subject");
-	  		docMap.put("body", "body");
-	  		docMap.put("recEmail", "recEmail");
-	  		docMap.put("recName", "recName");
-	  		docMap.put("recStatus", "recStatus");
-	  		docMap.put("recStatus", "recStatus");
-	  	}
-
+	}
 }
