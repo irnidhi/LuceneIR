@@ -2,6 +2,8 @@ package upload;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -66,7 +68,8 @@ public class DocumentCreator {
 					recNames = "";					
 					doc = new Document();
 					Date date= resultSet.getDate("date");
-					doc.add(new LongField(map.get("date"), date.getTime(), Field.Store.YES));
+					DateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+					doc.add(new StringField(map.get("date"), df.format(date),Field.Store.YES));
 					doc.add(new TextField(map.get("senderEmails"), resultSet.getString("email_id") + " " +
 							resultSet.getString("email2") + " " +
 							resultSet.getString("email3") + " " +

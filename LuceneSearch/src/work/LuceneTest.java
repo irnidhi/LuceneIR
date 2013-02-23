@@ -17,7 +17,7 @@ import org.apache.lucene.util.Version;
 
 import upload.DocumentCreator;
 
-public class LuceneMain {
+public class LuceneTest {
 	private static StandardAnalyzer analyzer = null;
 	private static Directory index = null;
 	private static IndexWriterConfig config = null;

@@ -43,7 +43,7 @@ public class LuceneSearch {
 
 	  }
 
-	  private static void addDocList(IndexWriter w, ArrayList<Document> list) throws IOException{
+	  private void addDocList(IndexWriter w, ArrayList<Document> list) throws IOException{
 	  		Document doc =null;
 	  		if (list!=null){
 	  			Iterator<Document> iter = list.iterator();
