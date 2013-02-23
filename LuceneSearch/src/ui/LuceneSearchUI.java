@@ -20,7 +20,10 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JLabel;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -56,8 +59,10 @@ public class LuceneSearchUI {
 	private String dateFrom = "";
 	private String dateTo = "";
 	private String[] columNames = { "From", "Subject", "Date", "Body"};
+	private String[]  dateFilters = { "Anytime", "Today", "This Month", "This Year" };
 	private JTable tableStd;
 	private JTable tableAdv;
+	private DateFormat df;
 
 	/**
 	 * Launch the application.
@@ -90,7 +95,7 @@ public class LuceneSearchUI {
 		email = new Email();
 		listResult = new ArrayList<Document>();
 		
-
+		df = new SimpleDateFormat("yyyyMMddHHmmss");
 		
 		frmInGroup = new JFrame();
 		frmInGroup.setResizable(false);
@@ -241,7 +246,34 @@ public class LuceneSearchUI {
 		
 		JLabel lblDate = new JLabel("Date");
 		
-		JComboBox comboBoxDate = new JComboBox();
+		final JComboBox comboBoxDate = new JComboBox(dateFilters);
+		comboBoxDate.setSelectedIndex(0);
+		comboBoxDate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Date dt = null;
+				Date dtNow = Calendar.getInstance().getTime();
+				dateTo = df.format(dtNow);
+				switch (comboBoxDate.getSelectedIndex()) {
+					case 0: //anytime
+						dateFrom="";
+						dateTo="";
+						break;
+					case 1: //today
+						dt = new Date(dtNow.getYear() , dtNow.getMonth() , dtNow.getDay());
+						dateFrom = df.format(dt);
+						break;
+					case 2: //thismonth
+						dt = new Date(dtNow.getYear() , dtNow.getMonth()  , 1);
+						dateFrom = df.format(dt);
+						break;
+					case 3: //thisyear
+						dt = new Date(dtNow.getYear() , 1,1);
+						dateFrom = df.format(dt);
+						
+				}
+			}
+		});
+
 		
 		JLabel lblFromPos = new JLabel("From Pos");
 		
@@ -257,9 +289,13 @@ public class LuceneSearchUI {
 				System.out.println("Search advanced will be performed");
 				listResult = null;
 				try {
+					String strBody = "";
+					strBody = textBodyHas.getText();
+					if (!textBodyDoesNot.getText().equals(""))
+						strBody = strBody + " AND (NOT " + textBodyDoesNot.getText() + ")";
 					email = new Email("", dateFrom, dateTo, "", textFrom.getText(), textFromPos.getText(), 
 							"", textTo.getText(), textToPos.getText(), textSubject.getText()
-							, textBodyHas.getText() + " AND (NOT " + textBodyDoesNot+ ")" , "");
+							, strBody , "");
 					listResult = luceneSearch.assistedQuery(email);
 					viewResult(listResult, tableAdv);
 				} catch (Exception e) {
@@ -374,7 +410,7 @@ public class LuceneSearchUI {
 		);
 		
 		tableAdv = new JTable(data,columNames);
-		tableAdv.setVisible(false);
+		tableAdv.setEnabled(false);
 		scrollPane_1.setViewportView(tableAdv);
 		advPanel.setLayout(gl_advPanel);
 		
