@@ -137,11 +137,6 @@ public class LuceneSearch {
   		HashMap<String,Analyzer> aMap = new HashMap<String, Analyzer>();
   		//aMap.put(docMap.get("mId"),new KeywordAnalyzer());
   		aMap.put(docMap.get("date"), new KeywordAnalyzer());
-  		aMap.put(docMap.get("senderName"),new StandardAnalyzer(Version.LUCENE_41));
-  		aMap.put(docMap.get("senderEmails"),new StandardAnalyzer(Version.LUCENE_41));
-  		aMap.put(docMap.get("senderStatus"),new StandardAnalyzer(Version.LUCENE_41));
-  		aMap.put(docMap.get("recName"),new StandardAnalyzer(Version.LUCENE_41));
-  		aMap.put(docMap.get("recEmail"),new StandardAnalyzer(Version.LUCENE_41));
   		aMap.put(docMap.get("recStatus"),new KeywordAnalyzer());
 		aMap.put(docMap.get("subject"), new SynonymAnalyzer());
 		aMap.put(docMap.get("body"),new SynonymAnalyzer());
