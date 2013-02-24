@@ -538,7 +538,7 @@ public class LuceneSearchUI {
 			JPanel panel = new JPanel();
 			frmHelp.getContentPane().add(panel, BorderLayout.CENTER);
 			
-			JLabel lblNewLabel = new JLabel("<html>\r\n--------------------------------------<br>\r\nLucene Search Application<br>\r\nGroup 11 - IN4325<br>\r\n--------------------------------------<br>\r\nHow to use :<br>\r\n1. Build index : Tools -> Build Index<br>\r\n2. Search :<br>\r\n    a. Standard Search<br>\r\n    b. Advanced Search<br>\r\n<br>\r\n--------------------------------------<br>\r\nNugroho Dwi P         :<br>\r\nMarhendra Lidiansa : 4256360<br>\r\nNidhi Singh               : <br>\r\n--------------------------------------<br>\r\n</html>");
+			JLabel lblNewLabel = new JLabel("<html>\r\n--------------------------------------<br>\r\nLucene Search Application<br>\r\nGroup 11 - IN4325<br>\r\n--------------------------------------<br>\r\nHow to use :<br>\r\n1. Build index : Tools -> Build Index<br>\r\n2. Search :<br>\r\n    a. Standard Search<br>\r\n    b. Advanced Search<br>\r\n<br>\r\n--------------------------------------<br>\r\nNugroho Dwi P         :4256786<br>\r\nMarhendra Lidiansa : 4256360<br>\r\nNidhi Singh               : 4242246<br>\r\n--------------------------------------<br>\r\n</html>");
 			lblNewLabel.setVerticalAlignment(SwingConstants.TOP);
 			GroupLayout gl_panel = new GroupLayout(panel);
 			gl_panel.setHorizontalGroup(

@@ -15,6 +15,8 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
 
+import analyze.SynonymAnalyzer;
+
 import data.Email;
 
 import upload.DocumentCreator;
@@ -25,16 +27,20 @@ public class LuceneTest {
 	
 	public static void main(String[] args) throws IOException, ParseException {
 		lSearch = new LuceneSearch();
-		lSearch.buildIndex();
+		try {
+			lSearch.buildIndex();
+		} catch (java.text.ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		//tes standard query 1
 		 String queryStr = "Dicks*";
 		 lSearch.standardQuery(queryStr);
 		//tes standard query 2
-		 queryStr = "(senderName:Dickson OR senderStatus:hobo)";
+		 queryStr = "(senderName:Dick* OR subject:person)";
 		 lSearch.standardQuery(queryStr);		 
 		//tes assisted query
-		// Email email = new Email("", "19980101000000","20050101000000", "dic*", "Dick*",  "**", "  ", "*", "??", "?",  "enron", "");
-		//lSearch.assistedQuery(email);
-
+		Email email = new Email("", "","", "dic*", "dic*",  "", " ", "", "", "",  "enron", "");
+		lSearch.assistedQuery(email);
 	}
 }

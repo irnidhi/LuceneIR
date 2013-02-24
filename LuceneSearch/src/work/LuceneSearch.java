@@ -6,6 +6,9 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.core.KeywordAnalyzer;
+import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
@@ -14,6 +17,8 @@ import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
+
+import analyze.SynonymAnalyzer;
 
 import data.Email;
 
@@ -24,7 +29,7 @@ public class LuceneSearch {
 	 * Index is built by populating document from DBMS and the index is saved into RAM.
 	 * This class is also act as a wrapper for LuceneQuery
 	 * */
-	private StandardAnalyzer analyzer = null;
+	private PerFieldAnalyzerWrapper analyzer = null;
 	private Directory index = null;
 	private IndexWriterConfig config = null;
 	private IndexWriter writer = null;
@@ -39,7 +44,7 @@ public class LuceneSearch {
 		initializeProp();
 	}
 	
-	public  void buildIndex() throws IOException, ParseException {
+	public  void buildIndex() throws IOException, ParseException, java.text.ParseException {
 		/*
 		 * Index is built by populating document from DBMS and put into list of Documents by the DocumentCreator class
 		 * list of Documents then indexed into RAM using several Analyzers
@@ -47,7 +52,7 @@ public class LuceneSearch {
 		System.out.println("Start building index :" + Calendar.getInstance().getTime());
 	    DocumentCreator docCreator = new DocumentCreator(docMap);
 	    ArrayList<Document> listDocuments = docCreator.documentGenerator();
-	    analyzer = new StandardAnalyzer(Version.LUCENE_41);
+	    analyzer = analyzeFields();
 	    index = new RAMDirectory();
 	    config = new IndexWriterConfig(Version.LUCENE_41, analyzer);
 	    writer = new IndexWriter(index, config);	  	
@@ -126,6 +131,23 @@ public class LuceneSearch {
   	public void close() throws IOException{
   		if (lQuery!=null)
   			lQuery.close();
+  	}
+  	private PerFieldAnalyzerWrapper analyzeFields() throws IOException, java.text.ParseException {
+  		HashMap<String,Analyzer> aMap = new HashMap<String, Analyzer>();
+  		//aMap.put(docMap.get("mId"),new KeywordAnalyzer());
+  		aMap.put(docMap.get("date"), new KeywordAnalyzer());
+  		aMap.put(docMap.get("senderName"),new StandardAnalyzer(Version.LUCENE_41));
+  		aMap.put(docMap.get("senderEmails"),new StandardAnalyzer(Version.LUCENE_41));
+  		aMap.put(docMap.get("senderStatus"),new StandardAnalyzer(Version.LUCENE_41));
+  		aMap.put(docMap.get("recName"),new StandardAnalyzer(Version.LUCENE_41));
+  		aMap.put(docMap.get("recEmail"),new StandardAnalyzer(Version.LUCENE_41));
+  		aMap.put(docMap.get("recStatus"),new KeywordAnalyzer());
+		aMap.put(docMap.get("subject"), new SynonymAnalyzer());
+		aMap.put(docMap.get("body"),new SynonymAnalyzer());
+
+  		PerFieldAnalyzerWrapper analyzer = new PerFieldAnalyzerWrapper(new StandardAnalyzer(Version.LUCENE_41),aMap);
+		return analyzer;
+  		
   	}
 	  	
 }

@@ -65,7 +65,7 @@ public class LuceneQuery {
 			    for(int i=0;i<hits.length;++i) {
 			      int docId = hits[i].doc;
 			      Document d = searcher.doc(docId);
-			      System.out.println((i + 1) + ". " + d.get("senderName") + "\t" + d.get("mId") + "\t" + d.get("date"));
+			      System.out.println((i + 1) + ". " + d.get("senderName") + "\t" + d.get("subject") + "\t" + d.get("date"));
 			      listRes.add(d);
 			     
 			    }
