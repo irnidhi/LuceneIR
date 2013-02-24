@@ -54,6 +54,7 @@ public class LuceneSearch {
 	    ArrayList<Document> listDocuments = docCreator.documentGenerator();
 	    analyzer = analyzeFields();
 	    index = new RAMDirectory();
+	    //index = FSDirectory.open(new File("c:/temp"));
 	    config = new IndexWriterConfig(Version.LUCENE_41, analyzer);
 	    writer = new IndexWriter(index, config);	  	
 	    addDocList(writer, listDocuments);

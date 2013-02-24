@@ -27,22 +27,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
-
 import javax.swing.JComboBox;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-
 import org.apache.lucene.document.Document;
-import org.apache.lucene.queryparser.classic.ParseException;
-
 import data.Email;
-
 import work.LuceneSearch;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JScrollPane;
-
 public class LuceneSearchUI {
 
 	private JFrame frmInGroup;
@@ -224,19 +216,7 @@ public class LuceneSearchUI {
 							.addComponent(foundStdLbl)
 							.addGap(515))))
 		);
-		Object[][] data = {
-			    {"", "", "", ""},
-			    {"", "", "", ""},
-			    {"", "", "", ""},
-			    {"", "", "", ""},
-			    {"", "", "", ""},
-			    {"", "", "", ""},
-			    {"", "", "", ""},
-			    {"", "", "", ""},
-			    {"", "", "", ""},
-			    {"", "", "", ""},
 
-			};
 		//tableStd = new JTable(data, columNames);
 		modelStd = new DefaultTableModel();
 		tableStd = new JTable();
