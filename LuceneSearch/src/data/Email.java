@@ -24,18 +24,18 @@ public class Email {
 			String senderStatus, String recEmail, String recName,
 			String recStatus, String subject, String body, String type) {
 
-		this.mId = mId;
-		this.dateFrom = dateFrom.trim();
-		this.dateTo =dateTo.trim();
-		this.senderEmails = senderEmails.trim();
-		this.senderName = senderName.trim();
-		this.senderStatus = senderStatus.trim();
-		this.recEmail = recEmail.trim();
-		this.recName = recName.trim();
-		this.recStatus = recStatus.trim();
-		this.subject = subject.trim();
-		this.body = body.trim();
-		this.type = type.trim();
+		this.setmId(mId.trim());
+		this.setDateFrom(dateFrom.trim());
+		this.setDateTo(dateTo.trim());
+		this.setSenderEmails(senderEmails.trim());
+		this.setSenderName(senderName.trim());
+		this.setSenderStatus(senderStatus.trim());
+		this.setRecEmail(recEmail.trim());
+		this.setRecName(recName.trim());
+		this.setRecStatus(recStatus.trim());
+		this.setSubject(subject.trim());
+		this.setBody(body.trim());
+		this.setType(type.trim());
 
 	}
 	
@@ -43,17 +43,17 @@ public class Email {
 			String senderStatus, String recEmail, String recName,
 			String recStatus, String subject, String body, String type) {
 
-		this.mId = mId;
-		this.date = date.getTime();
-		this.senderEmails = senderEmails.trim();
-		this.senderName = senderName.trim();
-		this.senderStatus = senderStatus.trim();
-		this.recEmail = recEmail.trim();
-		this.recName = recName.trim();
-		this.recStatus = recStatus.trim();
-		this.subject = subject.trim();
-		this.body = body.trim();
-		this.type = type.trim();
+		this.setmId(mId.trim());
+		this.setDate(date.getTime());
+		this.setSenderEmails(senderEmails.trim());
+		this.setSenderName(senderName.trim());
+		this.setSenderStatus(senderStatus.trim());
+		this.setRecEmail(recEmail.trim());
+		this.setRecName(recName.trim());
+		this.setRecStatus(recStatus.trim());
+		this.setSubject(subject.trim());
+		this.setBody(body.trim());
+		this.setType(type.trim());
 
 	}
 	@Override
@@ -69,8 +69,9 @@ public class Email {
 	public String getmId() {
 		return mId;
 	}
-	public void setmId(String mId) {
-		this.mId = mId;
+	public void setmId(String txtInp) {
+		txtInp = cleanTermForQuery(txtInp);
+		this.mId = txtInp;
 	}
 	public Long getDate() {
 		return date;
@@ -86,76 +87,93 @@ public class Email {
 	public String getSenderEmails() {
 		return senderEmails;
 	}
-	public void setSenderEmails(String senderEmails) {
-		this.senderEmails = senderEmails;
+	public void setSenderEmails(String txtInp) {
+		txtInp = cleanTermForQuery(txtInp);
+		this.senderEmails = txtInp;
 	}
 	public String getSenderName() {
 		return senderName;
 	}
-	public void setSenderName(String senderName) {
-		this.senderName = senderName;
+	public void setSenderName(String txtInp) {
+		txtInp = cleanTermForQuery(txtInp);
+		this.senderName = txtInp;
 	}
 	public String getSenderStatus() {
 		return senderStatus;
 	}
-	public void setSenderStatus(String senderStatus) {
-		this.senderStatus = senderStatus;
+	public void setSenderStatus(String txtInp) {
+		txtInp = cleanTermForQuery(txtInp);
+		this.senderStatus = txtInp;
 	}
 	public String getRecEmail() {
 		return recEmail;
 	}
-	public void setRecEmail(String recEmail) {
-		this.recEmail = recEmail;
+	public void setRecEmail(String txtInp) {
+		txtInp = cleanTermForQuery(txtInp);
+		this.recEmail = txtInp;
 	}
 	public String getRecName() {
 		return recName;
 	}
-	public void setRecName(String recName) {
-		this.recName = recName;
+	public void setRecName(String txtInp) {
+		txtInp = cleanTermForQuery(txtInp);
+		this.recName = txtInp;
 	}
 	public String getRecStatus() {
 		return recStatus;
 	}
-	public void setRecStatus(String recStatus) {
-		this.recStatus = recStatus;
+	public void setRecStatus(String txtInp) {
+		txtInp = cleanTermForQuery(txtInp);
+		this.recStatus = txtInp;
 	}
 	public String getSubject() {
 		return subject;
 	}
-	public void setSubject(String subject) {
-		this.subject = subject;
+	public void setSubject(String txtInp) {
+		txtInp = cleanTermForQuery(txtInp);
+		this.subject = txtInp;
 	}
 	public String getBody() {
 		return body;
 	}
-	public void setBody(String body) {
-		this.body = body;
+	public void setBody(String txtInp) {
+		txtInp = cleanTermForQuery(txtInp);
+		this.body = txtInp;
 	}
 
 	public String getType() {
 		return type;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setType(String txtInp) {
+		txtInp = cleanTermForQuery(txtInp);
+		this.type = txtInp;
 	}
 
 	public String getDateTo() {
 		return dateTo;
 	}
 
-	public void setDateTo(String dateTo) {
-		this.dateTo = dateTo;
+	public void setDateTo(String txtInp) {
+		txtInp = cleanTermForQuery(txtInp);
+		this.dateTo = txtInp;
 	}
 
 	public String getDateFrom() {
 		return dateFrom;
 	}
 
-	public void setDateFrom(String dateFrom) {
-		this.dateFrom = dateFrom;
+	public void setDateFrom(String txtInp) {
+		txtInp = cleanTermForQuery(txtInp);
+		this.dateFrom = txtInp;
 	}
 	
+	private String cleanTermForQuery(String txtInp){
+		while (!txtInp.equals("") && (txtInp.substring(0, 1).equals("*") || txtInp.substring(0, 1).equals("?"))) {
+			txtInp = txtInp.substring(1);
+		}
+		return txtInp;
+	}
 
 	
 }

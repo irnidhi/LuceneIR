@@ -30,6 +30,7 @@ public class LuceneQuery {
     private int hitsPerPage = 10;
     private TopScoreDocCollector collector = null;
     private HashMap<String,String> map = null;
+    private Query q=null;
     
     
 	public LuceneQuery(HashMap<String, String> map) {
@@ -43,22 +44,24 @@ public class LuceneQuery {
 	    System.out.println("Query = " + queryStr);		
 			
 	    ArrayList<Document> listRes = null;
-		Query q = new QueryParser(Version.LUCENE_41, "body", analyzer).parse(queryStr);
-	    
-	    reader = DirectoryReader.open(index);
-	    searcher = new IndexSearcher(reader);
-	    collector = TopScoreDocCollector.create(hitsPerPage, true);
-	    searcher.search(q, collector);
-	    if (searcher!=null){
-		    ScoreDoc[] hits = collector.topDocs().scoreDocs;
-		    System.out.println("Found " + hits.length + " hits.");
-		    listRes = new ArrayList<Document>();
-		    for(int i=0;i<hits.length;++i) {
-		      int docId = hits[i].doc;
-		      Document d = searcher.doc(docId);
-		      System.out.println((i + 1) + ". " + d.get("senderName") + "\t" + d.get("mId") + "\t" + d.get("date"));
-		      listRes.add(d);
-		     
+	    if (!queryStr.equals("")){
+			q = new QueryParser(Version.LUCENE_41, "body", analyzer).parse(queryStr);
+		    
+		    reader = DirectoryReader.open(index);
+		    searcher = new IndexSearcher(reader);
+		    collector = TopScoreDocCollector.create(hitsPerPage, true);
+		    searcher.search(q, collector);
+		    if (searcher!=null){
+			    ScoreDoc[] hits = collector.topDocs().scoreDocs;
+			    System.out.println("Found " + hits.length + " hits.");
+			    listRes = new ArrayList<Document>();
+			    for(int i=0;i<hits.length;++i) {
+			      int docId = hits[i].doc;
+			      Document d = searcher.doc(docId);
+			      System.out.println((i + 1) + ". " + d.get("senderName") + "\t" + d.get("mId") + "\t" + d.get("date"));
+			      listRes.add(d);
+			     
+			    }
 		    }
 	    }
 	    return listRes;
@@ -66,31 +69,33 @@ public class LuceneQuery {
 	    
 	public ArrayList<Document> simpleQuery(String queryStr, Analyzer analyzer, Directory index) throws IOException, ParseException {
 		System.out.println("Query = " + queryStr);
-		queryStr = simpleQueryConstructor(queryStr);
-	    System.out.println("Query = " + queryStr);
-	    
-	    ArrayList<Document> listRes = null;
-		Query q = new QueryParser(Version.LUCENE_40, "body", analyzer).parse(queryStr);
-	    
-	    reader = DirectoryReader.open(index);
-	    searcher = new IndexSearcher(reader);
-	    collector = TopScoreDocCollector.create(hitsPerPage, true);
-	    searcher.search(q, collector);
-	    
-	    if (searcher!=null){
-		    ScoreDoc[] hits = collector.topDocs().scoreDocs;
-		    System.out.println("Found " + hits.length + " hits.");
-		    listRes = new ArrayList<Document>();
-		    for(int i=0;i<hits.length;++i) {
-		      int docId = hits[i].doc;
-		      Document d = searcher.doc(docId);
-		      System.out.println((i + 1) + ". " + d.get("senderName") + "\t" + d.get("mId"));
-		      listRes.add(d);
-		     
+		ArrayList<Document> listRes = null;
+		if (!queryStr.equals("")){
+			queryStr = simpleQueryConstructor(queryStr);
+		    System.out.println("Query = " + queryStr);
+		    
+		    
+			q = new QueryParser(Version.LUCENE_40, "body", analyzer).parse(queryStr);
+		    
+		    reader = DirectoryReader.open(index);
+		    searcher = new IndexSearcher(reader);
+		    collector = TopScoreDocCollector.create(hitsPerPage, true);
+		    searcher.search(q, collector);
+		    
+		    if (searcher!=null){
+			    ScoreDoc[] hits = collector.topDocs().scoreDocs;
+			    System.out.println("Found " + hits.length + " hits.");
+			    listRes = new ArrayList<Document>();
+			    for(int i=0;i<hits.length;++i) {
+			      int docId = hits[i].doc;
+			      Document d = searcher.doc(docId);
+			      System.out.println((i + 1) + ". " + d.get("senderName") + "\t" + d.get("mId"));
+			      listRes.add(d);
+			     
+			    }
+		    	
 		    }
-	    	
-	    }
-	    		
+		}	
 	    return listRes;
 	}
 	
@@ -100,6 +105,12 @@ public class LuceneQuery {
 	};
 	
 	private String simpleQueryConstructor(String query){
+	
+		while (!query.equals("") && (query.substring(0, 1).equals("*") || query.substring(0, 1).equals("?"))) {
+			query = query.substring(1);
+		}
+		
+
 		String queryOut = "";
 		boolean found=false;
 		Iterator<Entry<String, String>> iter = map.entrySet().iterator();
@@ -123,46 +134,34 @@ public class LuceneQuery {
 	}
 	
 	private String assistedQueryConstructor(Email email){
-		//input check
-		/*
-		for(int i=0;i<10;i++){
-			while (!queryInput[i].equals("")){
-				if(queryInput[i].substring(0, 1).equals("*")) 
-					queryInput[i] = queryInput[i].substring(1);
-				else break;
-			}
-			while (!queryInput[i].equals("")){
-				if(queryInput[i].substring(0, 1).equals("?")) 
-					queryInput[i] = queryInput[i].substring(1);
-				else break;
-			}
-		}
-		*/
+
 		//build query
 		String queryAss = "";
 		if (email!=null){
 			if((!email.getDateFrom().equals("")) && (!email.getDateTo().equals(""))){
 				queryAss = queryAss + map.get("date") +":[" + email.getDateFrom() + " TO " + email.getDateTo() + "]";
 			}
-			if(!email.getSenderEmails().equals("")) {
-				if(!queryAss.equals("")) queryAss += " AND ";
-				queryAss = queryAss + map.get("senderEmails") +":" + email.getSenderEmails();
-			}
+			//if(!email.getSenderEmails().equals("")) {
+			//	if(!queryAss.equals("")) queryAss += " AND ";
+			//	queryAss = queryAss + map.get("senderEmails") +":" + email.getSenderEmails();
+			//}
 			if(!email.getSenderName().equals("")) {
 				if(!queryAss.equals("")) queryAss += " AND ";
-				queryAss = queryAss + map.get("senderName") +":" + email.getSenderName();
+				queryAss = queryAss + "((" +map.get("senderName") +":" + email.getSenderName() +
+				") OR (" +map.get("senderEmails") +":" + email.getSenderName() + "))";
 			}
 			if(!email.getSenderStatus().equals("")) {
 				if(!queryAss.equals("")) queryAss += " AND ";
 				queryAss = queryAss + map.get("senderStatus") +":" + email.getSenderStatus();
 			}
-			if(!email.getRecEmail().equals("")) {
-				if(!queryAss.equals("")) queryAss += " AND ";
-				queryAss = queryAss + map.get("recEmail") +":" + email.getRecEmail();
-			}
+			//if(!email.getRecEmail().equals("")) {
+			//	if(!queryAss.equals("")) queryAss += " AND ";
+			//	queryAss = queryAss + map.get("recEmail") +":" + email.getRecEmail();
+			//}
 			if(!email.getRecName().equals("")) {
 				if(!queryAss.equals("")) queryAss += " AND ";
-				queryAss = queryAss + map.get("recName") +":" + email.getRecName();
+				queryAss = queryAss + "((" + map.get("recName") +":" + email.getRecName() +
+						") OR (" +map.get("recEmail") +":" + email.getRecName() + "))";
 			}
 			if(!email.getRecStatus().equals("")) {
 				if(!queryAss.equals("")) queryAss += " AND ";
