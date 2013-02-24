@@ -60,10 +60,12 @@ public class LuceneSearchUI {
 	private String dateFrom = "";
 	private String dateTo = "";
 	private String[] columNames = { "From", "Subject", "Date", "Body"};
-	private String[]  dateFilters = { "Anytime", "Today", "This Month", "This Year" };
+	private String[]  dateFilters = { "Anytime", "Today", "This Month", "This Year" , "Year 2001"};
 	private JTable tableStd;
 	private JTable tableAdv;
 	private DateFormat df;
+	private DefaultTableModel modelStd;
+	private DefaultTableModel modelAdv;
 	JFrame frmHelp =null;
 
 	/**
@@ -162,7 +164,12 @@ public class LuceneSearchUI {
 					foundStdLbl.setText("Found : 0 result(s)");
 				else
 					foundStdLbl.setText("Found : "+ listResult.size()+" result(s)");
-				viewResult(listResult, tableStd);
+				try {
+					viewResult(listResult, tableStd, modelStd);
+				} catch (java.text.ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
 
@@ -230,7 +237,11 @@ public class LuceneSearchUI {
 			    {"", "", "", ""},
 
 			};
-		tableStd = new JTable(data, columNames);
+		//tableStd = new JTable(data, columNames);
+		modelStd = new DefaultTableModel();
+		tableStd = new JTable();
+		tableStd.setModel(modelStd);
+		modelStd.setColumnIdentifiers(columNames);
 		tableStd.setEnabled(false);
 		scrollPane.setViewportView(tableStd);
 		stdPanel.setLayout(gl_stdPanel);
@@ -271,28 +282,44 @@ public class LuceneSearchUI {
 		final JComboBox comboBoxDate = new JComboBox(dateFilters);
 		comboBoxDate.setSelectedIndex(0);
 		comboBoxDate.addActionListener(new ActionListener() {
+			
 			public void actionPerformed(ActionEvent e) {
+				Calendar cal = Calendar.getInstance();
 				Date dt = null;
 				Date dtNow = Calendar.getInstance().getTime();
 				dateTo = df.format(dtNow);
+
+				
 				switch (comboBoxDate.getSelectedIndex()) {
 					case 0: //anytime
 						dateFrom="";
 						dateTo="";
 						break;
 					case 1: //today
-						dt = new Date(dtNow.getYear() , dtNow.getMonth() , dtNow.getDay());
-						dateFrom = df.format(dt);
+						dateFrom = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
+						dateFrom += "000000";
 						break;
 					case 2: //thismonth
-						dt = new Date(dtNow.getYear() , dtNow.getMonth()  , 1);
-						dateFrom = df.format(dt);
+
+						dateFrom = new SimpleDateFormat("yyyyMM").format(Calendar.getInstance().getTime());
+						dateFrom += "01000000";
 						break;
 					case 3: //thisyear
-						dt = new Date(dtNow.getYear() , 1,1);
+						dateFrom = new SimpleDateFormat("yyyy").format(Calendar.getInstance().getTime());
+						dateFrom += "0101000000";
+						break;
+					case 4 ://y 2001
+						cal.set(2001,0,1,0,0,0);
+						dt = cal.getTime();
 						dateFrom = df.format(dt);
-						
+						cal.set(2001,11,31,0,0,0);
+						dt = cal.getTime();
+						dateTo = df.format(dt);
+						break;
+					
 				}
+				System.out.println(comboBoxDate.getSelectedIndex()+" -Date to : " + dateTo);
+				System.out.println("Date from : " + dateFrom);
 			}
 		});
 
@@ -323,7 +350,7 @@ public class LuceneSearchUI {
 						foundAdvLbl.setText("Found : 0 result(s)");
 					else
 						foundAdvLbl.setText("Found : "+listResult.size()+" result(s)");
-					viewResult(listResult, tableAdv);
+					viewResult(listResult, tableAdv, modelAdv);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -441,8 +468,11 @@ public class LuceneSearchUI {
 							.addComponent(foundAdvLbl)
 							.addGap(338))))
 		);
-		
-		tableAdv = new JTable(data,columNames);
+		modelAdv = new DefaultTableModel();
+		tableAdv = new JTable();
+		tableAdv.setModel(modelAdv);
+		modelAdv.setColumnIdentifiers(columNames);
+		//tableAdv = new JTable(data,columNames);
 		tableAdv.setEnabled(false);
 		scrollPane_1.setViewportView(tableAdv);
 		advPanel.setLayout(gl_advPanel);
@@ -463,36 +493,37 @@ public class LuceneSearchUI {
 		});
 	}
 
-	private void viewResult(ArrayList<Document> listResult, JTable table){
+	private void viewResult(ArrayList<Document> listResult, JTable table, DefaultTableModel  model) throws java.text.ParseException{
 		String[][] data = {
-			    {"", "", "", ""},
-			    {"", "", "", ""},
-			    {"", "", "", ""},
-			    {"", "", "", ""},
-			    {"", "", "", ""},
-			    {"", "", "", ""},
-			    {"", "", "", ""},
-			    {"", "", "", ""},
-			    {"", "", "", ""},
-			    {"", "", "", ""},
-
+			    {"", "", "", ""}
 			};	
+		model = new DefaultTableModel();
+		table.setModel(model);
+		model.setColumnIdentifiers(columNames);
+		
+		
+		SimpleDateFormat dfIn = new SimpleDateFormat("yyyyMMddHHmmss");
+		SimpleDateFormat dfOut = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		
 		if (listResult!=null){
 			Iterator<Document> iter = listResult.iterator();
-			int i = 0;
+	
 			
 			while (iter.hasNext()){
 				Document doc = iter.next();
-				data [i][0] = doc.get("senderName") + " : " + doc.get("senderEmails");
-				data [i][1] = doc.get("subject");
-				data [i][2] = doc.get("date");
-				data [i][3] = doc.get("body");
-				i++;
+				
+				String name = doc.get("senderName") + " : " + doc.get("senderEmails");
+				String subject = doc.get("subject");
+				Date strDate = dfIn.parse(doc.get("date"));
+				String date = dfOut.format(strDate);
+				String body = doc.get("body");
+				model.addRow(new String[] {name, subject, date, body});
+			
 			}
 			
 		}
 			
-		table.setModel(new DefaultTableModel(data, columNames));
+		
 			
 	}
 	

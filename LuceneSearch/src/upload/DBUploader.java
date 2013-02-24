@@ -11,6 +11,10 @@ import java.util.Properties;
 
 
 public class DBUploader {
+	/*
+	 * This class main function is to populate data from MySQL Database
+	 * Properties for connection are defined within file "prop/jdbcconn.properties" 
+	 * */
 	private Connection connect = null;
 	private Statement statement = null;
 	private ResultSet resultSet = null;
@@ -29,10 +33,20 @@ public class DBUploader {
 		  
 	
 	public ResultSet readDataBase() throws Exception {
+		  /*
+		   * This function prepare and execute the query to retrieve the Enron email documents.
+		   * This function results the ResultSet
+		   * */
 	    try {
 	    	System.out.println("Start populating from database :" + Calendar.getInstance().getTime());
+	    	String path = getClass().getProtectionDomain().getCodeSource(). 
+	    			getLocation().toString().substring(6);
+	    	path = path.substring(0, path.length()-4);
+	    	
+	    	System.out.println("Path = " + path);
 	    	Properties props = new Properties();
-	        FileInputStream fis = new FileInputStream("c:/prop/jdbcconn.properties");
+	    	
+	        FileInputStream fis = new FileInputStream(path + "prop/jdbcconn.properties");
 	        props.load(fis);
 	    	
 	    	String url = props.getProperty("jdbc.url");
@@ -57,6 +71,9 @@ public class DBUploader {
 
 
 	  public void closeConnection() {
+		  /*
+		   * Close the resultSet and database connection
+		   * */
 	    try {
 	      if (resultSet != null) {
 	        resultSet.close();

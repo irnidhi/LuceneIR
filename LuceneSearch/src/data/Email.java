@@ -3,6 +3,10 @@ package data;
 import java.util.Date;
 
 public class Email {
+	/*
+	 * This class is the object representation of Enron's Document.
+	 * This class is used within search activities.
+	 * */
 	private String mId;
 	private Long date;
 	private String dateFrom;

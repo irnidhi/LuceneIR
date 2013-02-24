@@ -20,7 +20,10 @@ import data.Email;
 import upload.DocumentCreator;
 
 public class LuceneSearch {
-
+	/* This is the main Class that is called by other client(s) to use Lucene Search (by LuceneSearchUI in this project.
+	 * Index is built by populating document from DBMS and the index is saved into RAM.
+	 * This class is also act as a wrapper for LuceneQuery
+	 * */
 	private StandardAnalyzer analyzer = null;
 	private Directory index = null;
 	private IndexWriterConfig config = null;
@@ -31,16 +34,22 @@ public class LuceneSearch {
 	
 
 	public LuceneSearch(){
+		/*Initialize this class is alsi initializing Map properties that defines the document's attributes/ fields
+		 * */
 		initializeProp();
 	}
 	
 	public  void buildIndex() throws IOException, ParseException {
+		/*
+		 * Index is built by populating document from DBMS and put into list of Documents by the DocumentCreator class
+		 * list of Documents then indexed into RAM using several Analyzers
+		 * */
 		System.out.println("Start building index :" + Calendar.getInstance().getTime());
 	    DocumentCreator docCreator = new DocumentCreator(docMap);
 	    ArrayList<Document> listDocuments = docCreator.documentGenerator();
-	    analyzer = new StandardAnalyzer(Version.LUCENE_40);
+	    analyzer = new StandardAnalyzer(Version.LUCENE_41);
 	    index = new RAMDirectory();
-	    config = new IndexWriterConfig(Version.LUCENE_40, analyzer);
+	    config = new IndexWriterConfig(Version.LUCENE_41, analyzer);
 	    writer = new IndexWriter(index, config);	  	
 	    addDocList(writer, listDocuments);
 	    System.out.println("Done building index :" + Calendar.getInstance().getTime());
@@ -48,6 +57,9 @@ public class LuceneSearch {
 	  }
 
 	  private void addDocList(IndexWriter w, ArrayList<Document> list) throws IOException{
+		  /*
+		   * This procedure is adding the Documents within list into the IndexWriter
+		   * */
 	  		Document doc =null;
 	  		if (list!=null){
 	  			Iterator<Document> iter = list.iterator();
@@ -62,6 +74,10 @@ public class LuceneSearch {
 
 
 	 private void initializeProp() {
+		 /*
+		  * This procedure initializes the map that defines the document's fields and atttributes
+		  * The map is used when populating from Database, inserting into IndexWriter, and querying
+		  * */
   		docMap = new HashMap<String, String>();
   		docMap.put("mId", "mId");
   		docMap.put("date", "date");
@@ -77,6 +93,10 @@ public class LuceneSearch {
 	}
 
 	public ArrayList<Document> standardQuery(String queryStr) throws IOException, ParseException{
+		/*
+		 * This function calls LuceneQuery class to invoke the simple/ standard query
+		 * This function results list of Documents
+		 * */
 		System.out.println("Start query :" + Calendar.getInstance().getTime());
 	    lQuery = new LuceneQuery(docMap);
 	    listRes = lQuery.simpleQuery(queryStr, analyzer, index);
@@ -89,6 +109,10 @@ public class LuceneSearch {
 	}
 
 	public ArrayList<Document> assistedQuery(Email email) throws IOException, ParseException{
+		/*
+		 * This function calls LuceneQuery class to invoke the assisted/ advanced query
+		 * This function results list of Documents
+		 * */
 		System.out.println("Start query :" + Calendar.getInstance().getTime());
 	    lQuery = new LuceneQuery(docMap);
 	    listRes = lQuery.assistedQuery(email, analyzer, index);

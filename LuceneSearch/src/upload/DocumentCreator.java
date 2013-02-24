@@ -16,6 +16,10 @@ import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 
 public class DocumentCreator {
+	/*
+	 * This class act as a wrapper for Database connection to populate the Documents/ Emails.
+	 * 
+	 * */
 	private ArrayList<Document> listDocuments= null;
 	private HashMap<String,String> map = null;
 
@@ -29,6 +33,10 @@ public class DocumentCreator {
 	}
 
 	public ArrayList<Document> documentGenerator() {
+		/*
+		 * This function populate the list of Documents from the database.
+		 * This function results list of Documents.
+		 * */
 		DBUploader uploader = new DBUploader();
 		try {
 			ResultSet rs = uploader.readDataBase();
@@ -44,6 +52,11 @@ public class DocumentCreator {
 	}
 	
 	public ArrayList<Document> createDocumentList(ResultSet resultSet, HashMap<String, String> map) throws SQLException {
+		/*
+		 * This function populate the list of Documents from the resultset of database query.
+		 * This function maps the ResultSet with the Lucene Document class using predefined terms in Map
+		 * This function results list of Documents.
+		 * */
 		Document doc = null;
 		System.out.println("Start populating document list :" + Calendar.getInstance().getTime());
 		if (resultSet!=null){
@@ -57,10 +70,10 @@ public class DocumentCreator {
 				newMId = resultSet.getString("mid");
 				if (!newMId.equals(oldMId)){
 					if (doc!=null){
-						doc.add(new StringField(map.get("mId"), newMId, Field.Store.YES));
-						doc.add(new TextField(map.get("recEmail"), recEmails, Field.Store.YES));
-						doc.add(new TextField(map.get("recName"), recNames, Field.Store.YES));
-						doc.add(new TextField(map.get("recStatus"), recStatuses, Field.Store.YES));
+						doc.add(new StringField(map.get("mId"), newMId, Field.Store.NO));
+						doc.add(new TextField(map.get("recEmail"), recEmails, Field.Store.NO));
+						doc.add(new TextField(map.get("recName"), recNames, Field.Store.NO));
+						doc.add(new TextField(map.get("recStatus"), recStatuses, Field.Store.NO));
 						listDocuments.add(doc);
 						doc = null;
 					}
@@ -69,7 +82,7 @@ public class DocumentCreator {
 					recEmails ="";
 					recNames = "";					
 					doc = new Document();
-					Date date= resultSet.getDate("date");
+					Date date= resultSet.getTimestamp("date");
 					DateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
 					doc.add(new StringField(map.get("date"), df.format(date),Field.Store.YES));
 					doc.add(new TextField(map.get("senderEmails"), resultSet.getString("email_id") + " " +
@@ -78,7 +91,7 @@ public class DocumentCreator {
 							resultSet.getString("email_id"), Field.Store.YES));
 					doc.add(new TextField(map.get("senderName"), resultSet.getString("sender_last") + " " +
 							resultSet.getString("sender_first"), Field.Store.YES));
-					doc.add(new TextField(map.get("senderStatus"), resultSet.getString("sender_status"), Field.Store.YES));
+					doc.add(new TextField(map.get("senderStatus"), resultSet.getString("sender_status"), Field.Store.NO));
 					recEmails = resultSet.getString("rvalue");
 					recNames = resultSet.getString("rec_last") + " " +
 							resultSet.getString("rec_first");
@@ -99,10 +112,10 @@ public class DocumentCreator {
 				}
 			}
 			if (doc!=null){
-				doc.add(new StringField(map.get("mId"), newMId, Field.Store.YES));
-				doc.add(new TextField(map.get("recEmail"), recEmails, Field.Store.YES));
-				doc.add(new TextField(map.get("recName"), recNames, Field.Store.YES));
-				doc.add(new TextField(map.get("recStatus"), recStatuses, Field.Store.YES));
+				doc.add(new StringField(map.get("mId"), newMId, Field.Store.NO));
+				doc.add(new TextField(map.get("recEmail"), recEmails, Field.Store.NO));
+				doc.add(new TextField(map.get("recName"), recNames, Field.Store.NO));
+				doc.add(new TextField(map.get("recStatus"), recStatuses, Field.Store.NO));
 				listDocuments.add(doc);
 				doc=null;
 			}			
